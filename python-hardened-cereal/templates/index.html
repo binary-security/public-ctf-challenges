@@ -1,0 +1,41 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
+{% import "bootstrap/utils.html" as util %}
+
+{% block styles %}
+{{ super() }}
+	<style>
+		body { color: #005060; }
+	</style>
+{% endblock %}
+
+
+{% block title %}
+Binary Security Inc.
+{% endblock %}
+
+{% block content %}
+{{util.flashed_messages(dismissible=True)}}
+<div class="container">
+  <h1>Vulnerability patched! ✅</h1>
+
+  <div>The previous version of this was hacked :( I think I fixed the bug with input validation and hardened the container a bit.</div>
+  <h2>Enter address:</h2>
+  {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+
+  <h2>Enter data to deserialize:</h2>
+  {{ wtf.quick_form(serform, button_map={'submit_button': 'primary'}) }}
+
+  {% if result %}
+  <h2>Results:</h2>
+  <div>{{ result }}</div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}
