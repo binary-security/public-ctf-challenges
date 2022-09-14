@@ -1,6 +1,5 @@
 <?php
 
-//This needs admin permissions, so that it can insert the user
 $email = strtolower($_POST['mail']);
 $password = $_POST['Password'];
 $rePassword =$_POST['rePassword'];
@@ -20,7 +19,8 @@ if ($password != $rePassword){
 }
 
 //
-//Least privilege here, to check that user is not already in the database
+//Use predefined postgresql functions for maximum security
+//webserver cant do anything on his own
 //
 
 $db = pg_connect("host=localhost port=5432 dbname=webdb user=webserver password=Whatever");

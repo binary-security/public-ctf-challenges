@@ -160,10 +160,10 @@ BEGIN
     SELECT '/var/log/postgresql/' || identifier || md5(identifier) || '_' ||  extract(epoch from now())|| '.' || extension INTO fil;
 
     EXECUTE format ('
-    COPY (SELECT * FROM logs.failed_access_logs LIMIT %L ORDER BY DESC ) 
+    COPY (SELECT * FROM logs.failed_access_logs LIMIT %L) 
     TO %L', row_count,fil);
     DELETE FROM logs.failed_access_logs; 
-    RETURN "TRUE";
+    RETURN 'TRUE';
 END;
 $$;
 
