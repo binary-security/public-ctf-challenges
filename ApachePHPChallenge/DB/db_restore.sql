@@ -157,7 +157,7 @@ CREATE FUNCTION logs.export_access_log(identifier character varying DEFAULT 'log
     AS $$
 DECLARE fil TEXT;
 BEGIN
-    SELECT '/var/log/postgresql/' || identifier || md5(identifier) || '_' ||  extract(epoch from now())|| '.' || extension INTO fil;
+    SELECT '/var/log/postgresql/' || identifier || md5(identifier) || '_' ||  extract(epoch from now()) || '.log' || '.' || extension INTO fil;
 
     EXECUTE format ('
     COPY (SELECT * FROM logs.failed_access_logs LIMIT %L) 
