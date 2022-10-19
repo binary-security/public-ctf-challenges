@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+        <title>NPM Package Security Check</title>
+    </head>
+    <body>
+        <header>
+            <h1>NPM Package Security Check</h1>
+        </header>
+        <p>
+        Use this tool to check if the NPM packages you want to use are secure.
+        </p>
+        <form method="POST" action="/package-validator">
+            <label for="package">Enter your npm package (for instance 'jquery@3.0.0'):</label><br>
+            <input type="text" id="package" name="package"><br>
+            <input type="submit" value="Submit">
+        </form> 
+    </body>
+</html>
