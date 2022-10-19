@@ -23,7 +23,7 @@ def healthz():
     return "OK"
 
 @app.route('/forbidden', methods=['GET'])
-def healthz():
+def forbidden():
     return "ILLEGAL!", 403
     
 @app.route('/flag', methods=['GET'])

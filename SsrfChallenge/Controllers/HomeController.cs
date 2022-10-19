@@ -40,7 +40,7 @@ namespace SsrfChallenge.Controllers
                 ViewData["Error"] = "The URL isn't an HTML page.";
                 return View();
             }
-                
+
             if (!url.EndsWith(".html")) {
                 ViewData["Error"] = "The URL isn't an HTML page.";
                 return View();
@@ -51,45 +51,61 @@ namespace SsrfChallenge.Controllers
             var flag = _config.GetValue<string>("Flag", "DEFAULT_FAKE_FLAG");
             string flagEncoded = Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(flag));
 
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
-            request.Headers.Add("Accept", "text/html");
-            request.Headers.Add("User-Agent", "SINNER");
-            request.Headers.Add("Authorization", $"Bearer {flagEncoded}"); 
+            try{
 
-            var client = _clientFactory.CreateClient();
-            var response = await client.SendAsync(request);
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.Add("Accept", "text/html");
+                request.Headers.Add("User-Agent", "SINNER");
+                request.Headers.Add("Authorization", $"Bearer {flagEncoded}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                HtmlDocument pageDocument = new HtmlDocument();
-                pageDocument.Load(responseStream); 
+                var client = _clientFactory.CreateClient();
+                var response = await client.SendAsync(request);
 
-                var vgPattern = @"https?://vg.no.*";
-                var dbPattern = @"https?://db.no.*";
+                if (response.IsSuccessStatusCode)
+                {
+                    using var responseStream = await response.Content.ReadAsStreamAsync();
+                    HtmlDocument pageDocument = new HtmlDocument();
+                    pageDocument.Load(responseStream);
 
-                HtmlNodeCollection headers = null;
+                    var vgPattern = @"https?://.*vg.no.*";
+                    var aftenPostenPattern = @"https?://.*aftenposten.no.*";
+                    var nrkPattern = @"https?://.*nrk.no.*";
 
-                // If VG.no
-                if (Regex.Match(url, vgPattern, RegexOptions.IgnoreCase).Success) {
-                    headers = pageDocument.DocumentNode.SelectNodes("//h3[@itemprop='headline']");
-                } 
-                // If db.no
-                else if (Regex.Match(url, dbPattern, RegexOptions.IgnoreCase).Success){
-                    headers = pageDocument.DocumentNode.SelectNodes("//h1[@class='headline']");
+                    HtmlNodeCollection headers = null;
+
+                    // If VG.no
+                    if (Regex.Match(url, vgPattern, RegexOptions.IgnoreCase).Success) {
+                        headers = pageDocument.DocumentNode.SelectNodes("//h3[@itemprop='headline']");
+                    }
+                    // If aftenposten.no
+                    else if (Regex.Match(url, aftenPostenPattern, RegexOptions.IgnoreCase).Success){
+                        headers = pageDocument.DocumentNode.SelectNodes("//h3[@class='text']");
+                    }
+                    // If nrk.no
+                    else if (Regex.Match(url, nrkPattern, RegexOptions.IgnoreCase).Success){
+                        headers = pageDocument.DocumentNode.SelectNodes("//h3");
+                    }
+                    // Else grab all headers
+                    else {
+                        headers = pageDocument.DocumentNode.SelectNodes("//h1");
+                    }
+                    return View(headers);
+
+                } else {
+                    ViewData["Error"] = "Could not load news site";
+                    return View();
                 }
-                // Else grab all headers
-                else {
-                    headers = pageDocument.DocumentNode.SelectNodes("//h1");
 
-                }
-                return View(headers);
+            } catch (System.Net.Http.HttpRequestException e){
+                ViewData["Error"] = "Could not resolve domain";
+                _logger.LogInformation("Could not resolve domain. URL: {url}. Exception: {e}", url, e);
+                return View();
 
-            } else {
-                ViewData["Error"] = "Could not load news site";
+            } catch (Exception exc){
+                ViewData["Error"] = "Some exception occurred..";
+                _logger.LogInformation("Failed to make request. Exception: {e}", exc);
                 return View();
             }
-
         }
 
         public IActionResult Privacy()
