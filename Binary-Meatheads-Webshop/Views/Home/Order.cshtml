@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Order Page";
+}
+
+<div class="text-center">
+    <h1>So you would like to order our product?</h1>
+    <h2>Nice choice, how many would you like?</h2>
+       <form asp-action="OrderItem" enctype='application/json'>
+        <div class="form-group">
+            <label for="Quantity">Quantity</label>
+            <input type="number" name="Quantity" class="form-control">
+
+            <label for="Name">Name</label>
+            <select class="custom-select mr-sm-2" name="Name" id="inlineFormCustomSelect">
+                <option selected>Choose...</option>
+                <option value="Branded socks">Branded socks</option>
+                <option value="Leaky Coffee mug">Coffee mug</option>
+                <option value="Hacker Hoodie">Hacker hoodie</option>
+                <option value="Flipper Zer0">Flipper Zer0</option>
+                <option value="L@N Turtle">L@n turtle</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form> 
+    <h3>Don't worry about the address, we will find you</h3>
+</div>
